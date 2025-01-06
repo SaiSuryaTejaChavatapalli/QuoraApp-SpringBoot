@@ -1,8 +1,9 @@
 package com.sst.Quora_SpringBoot.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -11,12 +12,27 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class Comment extends BaseModel{
-    // Comment can also have more comments
 
-    // A comment belongs to another comment
     private String content;
-    // A comment belongs to an answer
-    @OneToOne
+
+    @ManyToOne
+    @JoinColumn(name = "answer_id")
     private String answer;
+
+
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    private Comment parentComment;
+
+    @OneToMany(mappedBy = "parentComment")
+    private Set<Comment> replies;
+
+    @ManyToMany
+    @JoinTable(
+            name = "comment_likes",
+            joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> likedBy;
 
 }

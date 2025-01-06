@@ -1,10 +1,10 @@
 package com.sst.Quora_SpringBoot.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -13,13 +13,29 @@ import lombok.*;
 @Setter
 @Builder
 public class Answer extends  BaseModel{
-    // Answer belongs to one question
-    @OneToOne
-    private String question;
 
-    private String content;
+  private String content;
 
-    // Answer has many comments
-    @OneToMany
-    private String comments;
+  @ManyToOne
+  @JoinColumn(name = "question_id")
+  private Question question;
+
+  //Many side has foreign key
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
+
+  @OneToMany(mappedBy = "answer")
+  private Comment comments;
+
+  @ManyToMany
+  @JoinTable(
+       name = "answer_likes",
+       joinColumns = @JoinColumn(name = "answer_id"),
+       inverseJoinColumns = @JoinColumn(name = "user_id")
+  )
+  private Set<User> likedBy;
+
+
 }
